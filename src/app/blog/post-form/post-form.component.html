@@ -1,0 +1,23 @@
+<div class="bg-white p-6 rounded-lg shadow-md">
+  <h2 class="text-2xl font-bold text-indigo-600">{{ title ? 'Edit Post' : 'Create New Post' }}</h2>
+
+  <form (submit)="handleSubmit()" class="space-y-4 mt-4">
+    <div>
+      <input [(ngModel)]="title" placeholder="Title" required
+        class="block w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-500">
+    </div>
+    
+    <div>
+      <textarea [(ngModel)]="content" placeholder="Content" required
+        class="block w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-500">
+      </textarea>
+    </div>
+
+    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md"
+      [disabled]="loading">{{ title ? 'Update Post' : 'Create Post' }}</button>
+
+    <div *ngIf="validationError" class="text-red-500 mt-2">{{ validationError }}</div>
+    <div *ngIf="successMessage" class="text-green-500 mt-2">{{ successMessage }}</div>
+    <div *ngIf="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</div>
+  </form>
+</div>
