@@ -11,6 +11,9 @@ import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { environment } from '../environment/environment';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { PostDetailComponent } from './blog/post-detail/post-detail.component';
+import { CommentsSectionComponent } from './blog/comments-section/comments-section.component';
+import { PostFormComponent } from './blog/post-form/post-form.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +21,9 @@ import { FormsModule } from '@angular/forms';
     LoginComponent,
     RegisterComponent,
     BlogPostComponent,
+    PostDetailComponent,
+    CommentsSectionComponent,
+    PostFormComponent,
   ],
   imports: [
     BrowserModule,
