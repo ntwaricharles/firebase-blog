@@ -1,0 +1,9 @@
+<div *ngIf="post" class="container mx-auto py-8">
+  <h1 class="text-4xl font-bold text-indigo-600">{{ post.title }}</h1>
+  <p class="text-gray-700 mt-4">{{ post.content }}</p>
+  <p class="mt-6">Author: <strong>{{ post.author }}</strong></p>
+  <p>Date: <strong>{{ post.createdAt | date }}</strong></p>
+</div>
+<div *ngIf="!post" class="text-center">
+  <p>Loading post...</p>
+</div>
