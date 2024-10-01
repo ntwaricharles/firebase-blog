@@ -1,18 +1,19 @@
 import { Component } from '@angular/core';
-import { AuthService } from '../../services/auth.service'; 
+import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
-  styleUrls: ['./register.component.css'], 
+  styleUrls: ['./register.component.css'],
 })
 export class RegisterComponent {
-  email: string = ''; 
-  password: string = ''; 
-  confirmPassword: string = ''; 
+  email: string = '';
+  password: string = '';
+  confirmPassword: string = '';
   errorMessage: string = '';
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
   // Function to handle user registration
   onRegister() {
@@ -20,13 +21,14 @@ export class RegisterComponent {
       this.authService
         .register(this.email, this.password)
         .then(() => {
-          console.log('Registration successful');
+          alert('Registration successful!');
+          this.router.navigate(['/login']); 
         })
         .catch((err: any) => {
-          this.errorMessage = err.message;
+          this.errorMessage = err.message; 
         });
     } else {
-      this.errorMessage = 'Passwords do not match!';
+      this.errorMessage = 'Passwords do not match!'; 
     }
   }
 }
