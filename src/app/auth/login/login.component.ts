@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-login',
@@ -13,7 +14,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService
   ) {}
 
   ngOnInit(): void {
@@ -30,12 +32,12 @@ export class LoginComponent implements OnInit {
       this.authService
         .login(email, password)
         .then(() => {
-          alert('Logged in successfully!');
+          this.toastr.success('Logged in successfully!');
           this.router.navigate(['/blog']);
         })
-        .catch((err) => alert('Login failed: ' + err.message));
+        .catch((err) => this.toastr.error('Login failed: ' + err.message));
     } else {
-      alert('Please fix the errors in the form.');
+      this.toastr.warning('Please fix the errors in the form.');
     }
   }
 
@@ -43,9 +45,9 @@ export class LoginComponent implements OnInit {
     this.authService
       .googleSignIn()
       .then(() => {
-        alert('Logged in with Google!');
+        this.toastr.success('Logged in with Google!'); 
         this.router.navigate(['/blog']);
       })
-      .catch((err) => alert('Google login failed: ' + err.message));
+      .catch((err) => this.toastr.error('Google login failed: ' + err.message));
   }
 }

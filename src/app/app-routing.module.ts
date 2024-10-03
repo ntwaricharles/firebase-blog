@@ -11,9 +11,9 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'blog', component: BlogPostComponent },
-  { path: 'blog/:id', component: PostDetailComponent }, // Route for viewing post details
-  { path: 'edit-post/:id', component: PostFormComponent }, // Route for editing a post
-  { path: 'create-post', component: PostFormComponent }, // Route for creating a new post
+  { path: 'blog/:id', component: PostDetailComponent }, 
+  { path: 'edit-post/:id', component: PostFormComponent },
+  { path: 'create-post', component: PostFormComponent },
 ];
 
 @NgModule({

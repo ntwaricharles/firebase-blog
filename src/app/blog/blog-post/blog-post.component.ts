@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ToastrService } from 'ngx-toastr';
 import { BlogService, BlogPost } from '../../services/blog.service';
 import { Router } from '@angular/router';
 
@@ -9,7 +10,11 @@ import { Router } from '@angular/router';
 export class BlogPostComponent implements OnInit {
   posts: BlogPost[] = [];
 
-  constructor(private blogService: BlogService, private router: Router) {}
+  constructor(
+    private blogService: BlogService,
+    private router: Router,
+    private toastr: ToastrService
+  ) {}
 
   ngOnInit() {
     // Fetch all blog posts
@@ -20,7 +25,7 @@ export class BlogPostComponent implements OnInit {
 
   // Navigate to the post-edit form and pass post data to the form
   editPost(post: BlogPost) {
-    this.router.navigate(['/edit-post'], { state: { post } });
+    this.router.navigate(['/edit-post', post.id], { state: { post } });
   }
 
   // Delete a post by ID
@@ -29,7 +34,7 @@ export class BlogPostComponent implements OnInit {
       this.blogService
         .deletePost(postId)
         .then(() => {
-          alert('Post deleted successfully!');
+          this.toastr.success('Post deleted successfully!');
           // Reload posts after deletion
           this.blogService.getPosts().subscribe((posts) => {
             this.posts = posts;
@@ -37,7 +42,7 @@ export class BlogPostComponent implements OnInit {
         })
         .catch((error) => {
           console.error('Error deleting post:', error);
-          alert('Failed to delete post');
+          this.toastr.error('Failed to delete post');
         });
     }
   }

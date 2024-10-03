@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import {
-  AngularFireList,
-  AngularFireDatabase,
-} from '@angular/fire/compat/database';
+  AngularFirestore,
+  AngularFirestoreCollection,
+} from '@angular/fire/compat/firestore';
 import { map, Observable } from 'rxjs';
 
 export interface BlogPost {
@@ -17,60 +17,35 @@ export interface BlogPost {
   providedIn: 'root',
 })
 export class BlogService {
-  private dbPath = '/blogs';
-  private commentsPath = '/comments';
+  private blogCollection: AngularFirestoreCollection<BlogPost>;
+  private commentsPath = 'comments';
 
-  blogsRef: AngularFireList<BlogPost>;
-
-  constructor(private db: AngularFireDatabase) {
-    this.blogsRef = db.list(this.dbPath);
+  constructor(private firestore: AngularFirestore) {
+    this.blogCollection = this.firestore.collection<BlogPost>('blog');
   }
 
   // Create a new blog post
-  createPost(post: BlogPost): Promise<string> {
-
-    const newPost = { ...post, createdAt: new Date() };
-    return this.blogsRef
-      .push(newPost)
-      .then((result) => {
-        if (result.key) {
-          return result.key;
-        } else {
-          throw new Error('Failed to create post: key is null');
-        }
-      })
-      .catch((error) => {
-        console.error('Error creating post:', error);
-        throw error;
-      });
+  createPost(post: BlogPost): Promise<void> {
+    const id = this.firestore.createId();
+    const newPost = { ...post, id, createdAt: new Date() };
+    return this.blogCollection.doc(id).set(newPost);
   }
 
   // Retrieve all blog posts (with IDs)
   getPosts(): Observable<BlogPost[]> {
-    return this.blogsRef.snapshotChanges().pipe(
-      map(
-        (changes) =>
-          changes
-            .map((c) => ({
-              id: c.payload.key,
-              title: c.payload.val()?.title || 'Untitled Post',
-              content: c.payload.val()?.content || 'No content available',
-              author: c.payload.val()?.author || 'Unknown Author',
-              createdAt: c.payload.val()?.createdAt || new Date(),
-            }))
-            .filter((post) => post.id !== null) // Filter out posts with null id
-      )
-    );
+    return this.blogCollection.valueChanges({ idField: 'id' });
   }
 
   // Retrieve a single blog post by ID
-  getPostById(id: string): Observable<BlogPost | null> {
-    return this.db.object<BlogPost>(`${this.dbPath}/${id}`).valueChanges();
+  getPostById(id: string): Observable<BlogPost | undefined> {
+    return this.blogCollection.doc<BlogPost>(id).valueChanges();
   }
 
   // Get comments by post ID
   getCommentsByPostId(postId: string): Observable<any[]> {
-    return this.db.list(`${this.commentsPath}/${postId}`).valueChanges();
+    return this.firestore
+      .collection<any>(`${this.commentsPath}/${postId}`)
+      .valueChanges();
   }
 
   // Add a new comment to the post
@@ -78,33 +53,31 @@ export class BlogService {
     postId: string,
     comment: { name: string; email: string; body: string }
   ): Promise<void> {
-    return this.db
-      .list(`${this.commentsPath}/${postId}`)
-      .push(comment)
+    return this.firestore
+      .collection(`${this.commentsPath}/${postId}`)
+      .add(comment)
       .then(() => {});
   }
 
   // Update a blog post by ID
-  updatePost(key: string, value: Partial<BlogPost>): Promise<void> {
-    return this.blogsRef.update(key, value).catch((error) => {
-      console.error('Error updating post:', error);
-      throw error;
-    });
+  updatePost(id: string, value: Partial<BlogPost>): Promise<void> {
+    return this.blogCollection
+      .doc(id)
+      .update(value)
+      .catch((error) => {
+        console.error('Error updating post:', error);
+        throw error;
+      });
   }
 
   // Delete a blog post by ID
-  deletePost(key: string): Promise<void> {
-    return this.blogsRef.remove(key).catch((error) => {
-      console.error('Error deleting post:', error);
-      throw error;
-    });
-  }
-
-  // Delete all blog posts
-  deleteAll(): Promise<void> {
-    return this.blogsRef.remove().catch((error) => {
-      console.error('Error deleting all posts:', error);
-      throw error;
-    });
+  deletePost(id: string): Promise<void> {
+    return this.blogCollection
+      .doc(id)
+      .delete()
+      .catch((error) => {
+        console.error('Error deleting post:', error);
+        throw error;
+      });
   }
 }

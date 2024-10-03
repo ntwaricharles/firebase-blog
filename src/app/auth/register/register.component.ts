@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-register',
@@ -15,7 +16,8 @@ export class RegisterComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private toastr: ToastrService 
   ) {}
 
   ngOnInit(): void {
@@ -27,12 +29,11 @@ export class RegisterComponent implements OnInit {
         confirmPassword: ['', [Validators.required]],
       },
       {
-        validators: this.passwordMatchValidator, // Custom validator for matching passwords
+        validators: this.passwordMatchValidator,
       }
     );
   }
 
-  // Custom validator to check if passwords match
   passwordMatchValidator(form: FormGroup) {
     return form.get('password')?.value === form.get('confirmPassword')?.value
       ? null
@@ -46,14 +47,16 @@ export class RegisterComponent implements OnInit {
       this.authService
         .register(email, password)
         .then(() => {
-          alert('Registration successful!');
+          this.toastr.success('Registration successful!');
           this.router.navigate(['/login']);
         })
         .catch((err: any) => {
           this.errorMessage = err.message;
+          this.toastr.error('Registration failed: ' + this.errorMessage); 
         });
     } else {
       this.errorMessage = 'Please fix the errors in the form.';
+      this.toastr.warning(this.errorMessage);
     }
   }
 }

@@ -3,7 +3,6 @@
     {{ postId ? "Edit Post" : "Create New Post" }}
   </h2>
 
-  <!-- Bind the formGroup to the form element -->
   <form [formGroup]="postForm" (ngSubmit)="handleSubmit()" class="space-y-6">
     <div>
       <input
@@ -11,6 +10,8 @@
         placeholder="Enter Post Title"
         class="block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#6AB187] focus:border-[#20948B]"
       />
+      <div *ngIf="postForm.get('title')?.errors?.['required']" class="text-red-600 text-sm mt-2">Title is required.</div>
+      <div *ngIf="postForm.get('title')?.errors?.['minlength']" class="text-red-600 text-sm mt-2">Title must be at least 3 characters long.</div>
     </div>
 
     <div>
@@ -20,6 +21,8 @@
         rows="6"
         class="block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#6AB187] focus:border-[#20948B]"
       ></textarea>
+      <div *ngIf="postForm.get('content')?.errors?.['required']" class="text-red-600 text-sm mt-2">Content is required.</div>
+      <div *ngIf="postForm.get('content')?.errors?.['minlength']" class="text-red-600 text-sm mt-2">Content must be at least 10 characters long.</div>
     </div>
 
     <button

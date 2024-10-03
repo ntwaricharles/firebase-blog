@@ -10,14 +10,13 @@ import { BlogService, BlogPost } from '../../services/blog.service';
 export class PostDetailComponent implements OnInit {
   post: BlogPost | null = null;
   comments: any[] = [];
-  commentForm: FormGroup; // Declare the FormGroup
+  commentForm: FormGroup;
 
   constructor(
     private blogService: BlogService,
     private route: ActivatedRoute,
-    private fb: FormBuilder // Inject FormBuilder
+    private fb: FormBuilder 
   ) {
-    // Initialize the form in the constructor
     this.commentForm = this.fb.group({
       name: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -58,7 +57,7 @@ export class PostDetailComponent implements OnInit {
 
     this.blogService.getCommentsByPostId(postId).subscribe(
       (comments) => {
-        this.comments = comments || []; // Fallback to an empty array if no comments found
+        this.comments = comments || []; 
         if (!comments) {
           console.log('No comments found for the post.');
         }
@@ -75,10 +74,10 @@ export class PostDetailComponent implements OnInit {
     if (postId && this.commentForm.valid) {
       // Proceed to add the comment
       this.blogService
-        .addCommentToPost(postId, this.commentForm.value) // Use the form value
+        .addCommentToPost(postId, this.commentForm.value)
         .then(() => {
-          this.commentForm.reset(); // Reset the form
-          this.loadComments(postId); // Reload comments
+          this.commentForm.reset(); 
+          this.loadComments(postId);
         })
         .catch((error) => {
           console.error('Failed to add comment:', error);

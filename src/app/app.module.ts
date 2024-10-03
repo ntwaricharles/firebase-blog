@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { ToastrModule } from 'ngx-toastr';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -10,10 +11,12 @@ import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
 import { environment } from '../environment/environment';
 import { RouterModule } from '@angular/router';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { PostDetailComponent } from './blog/post-detail/post-detail.component';
 import { CommentsSectionComponent } from './blog/comments-section/comments-section.component';
 import { PostFormComponent } from './blog/post-form/post-form.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
 
 @NgModule({
   declarations: [
@@ -32,6 +35,12 @@ import { PostFormComponent } from './blog/post-form/post-form.component';
     AngularFireModule.initializeApp(environment.firebaseConfig),
     AngularFireAuthModule,
     RouterModule,
+    BrowserAnimationsModule,
+    ToastrModule.forRoot({
+      timeOut: 2000, 
+      positionClass: 'toast-top-right', 
+      preventDuplicates: true,
+    }),
   ],
   providers: [AppComponent],
   bootstrap: [AppComponent],
