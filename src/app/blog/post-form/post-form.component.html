@@ -1,23 +1,39 @@
-<div class="bg-white p-6 rounded-lg shadow-md">
-  <h2 class="text-2xl font-bold text-indigo-600">{{ title ? 'Edit Post' : 'Create New Post' }}</h2>
+<div class="bg-white p-8 rounded-lg shadow-lg max-w-lg mx-auto">
+  <h2 class="text-3xl font-bold text-[#20948B] mb-6 text-center">
+    {{ postId ? "Edit Post" : "Create New Post" }}
+  </h2>
 
-  <form (submit)="handleSubmit()" class="space-y-4 mt-4">
+  <!-- Bind the formGroup to the form element -->
+  <form [formGroup]="postForm" (ngSubmit)="handleSubmit()" class="space-y-6">
     <div>
-      <input [(ngModel)]="title" placeholder="Title" required
-        class="block w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-500">
+      <input
+        formControlName="title"
+        placeholder="Enter Post Title"
+        class="block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#6AB187] focus:border-[#20948B]"
+      />
     </div>
-    
+
     <div>
-      <textarea [(ngModel)]="content" placeholder="Content" required
-        class="block w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-500">
-      </textarea>
+      <textarea
+        formControlName="content"
+        placeholder="Enter Post Content"
+        rows="6"
+        class="block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#6AB187] focus:border-[#20948B]"
+      ></textarea>
     </div>
 
-    <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md"
-      [disabled]="loading">{{ title ? 'Update Post' : 'Create Post' }}</button>
+    <button
+      type="submit"
+      class="block w-full px-4 py-3 text-white bg-gradient-to-r from-[#20948B] to-[#6AB187] rounded-lg hover:bg-[#6AB187] focus:outline-none focus:ring-4"
+    >
+      {{ postId ? "Update Post" : "Create Post" }}
+    </button>
 
-    <div *ngIf="validationError" class="text-red-500 mt-2">{{ validationError }}</div>
-    <div *ngIf="successMessage" class="text-green-500 mt-2">{{ successMessage }}</div>
-    <div *ngIf="errorMessage" class="text-red-500 mt-2">{{ errorMessage }}</div>
+    <div *ngIf="errorMessage" class="text-red-600 text-sm mt-4">
+      {{ errorMessage }}
+    </div>
+    <div *ngIf="successMessage" class="text-green-600 text-sm mt-4">
+      {{ successMessage }}
+    </div>
   </form>
 </div>

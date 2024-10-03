@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BlogService, BlogPost } from '../../services/blog.service';
 
 @Component({
@@ -7,18 +8,22 @@ import { BlogService, BlogPost } from '../../services/blog.service';
   templateUrl: './post-detail.component.html',
 })
 export class PostDetailComponent implements OnInit {
-  post: BlogPost | null = null; // Ensure post is initialized as null
+  post: BlogPost | null = null;
   comments: any[] = [];
-  newComment: { name: string; email: string; body: string } = {
-    name: '',
-    email: '',
-    body: '',
-  };
+  commentForm: FormGroup; // Declare the FormGroup
 
   constructor(
     private blogService: BlogService,
-    private route: ActivatedRoute
-  ) {}
+    private route: ActivatedRoute,
+    private fb: FormBuilder // Inject FormBuilder
+  ) {
+    // Initialize the form in the constructor
+    this.commentForm = this.fb.group({
+      name: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      body: ['', Validators.required],
+    });
+  }
 
   ngOnInit(): void {
     const postId = this.route.snapshot.paramMap.get('id');
@@ -29,25 +34,22 @@ export class PostDetailComponent implements OnInit {
     }
   }
 
-  // Load the post details based on post ID
   loadPostDetails(postId: string) {
     this.blogService.getPostById(postId).subscribe((post) => {
       if (post) {
         this.post = post;
         if (post.id) {
-          this.loadComments(post.id); // Load comments only if post.id exists
+          this.loadComments(post.id);
         } else {
           console.error('Post does not have a valid ID.');
         }
       } else {
         console.error('Post not found.');
-        this.post = null; // Set post to null to handle the absence of a valid post
+        this.post = null;
       }
     });
   }
 
-  // Load comments for the current post
-  // Load comments for the current post
   loadComments(postId: string | null | undefined) {
     if (!postId) {
       console.error('Invalid post ID provided for loading comments.');
@@ -56,10 +58,8 @@ export class PostDetailComponent implements OnInit {
 
     this.blogService.getCommentsByPostId(postId).subscribe(
       (comments) => {
-        if (comments) {
-          this.comments = comments;
-        } else {
-          this.comments = []; // Fallback to an empty array if no comments found
+        this.comments = comments || []; // Fallback to an empty array if no comments found
+        if (!comments) {
           console.log('No comments found for the post.');
         }
       },
@@ -69,26 +69,22 @@ export class PostDetailComponent implements OnInit {
     );
   }
 
-  // Add a new comment
-  // Add a new comment
   addComment() {
-    // Safely check if post and post.id are defined
     const postId = this.post?.id;
 
-    if (postId) {
+    if (postId && this.commentForm.valid) {
       // Proceed to add the comment
       this.blogService
-        .addCommentToPost(postId, this.newComment)
+        .addCommentToPost(postId, this.commentForm.value) // Use the form value
         .then(() => {
-          this.newComment = { name: '', email: '', body: '' }; // Reset the form
+          this.commentForm.reset(); // Reset the form
           this.loadComments(postId); // Reload comments
         })
         .catch((error) => {
           console.error('Failed to add comment:', error);
         });
     } else {
-      // Log error if postId is not available
-      console.error('Post ID is not available, cannot add comment.');
+      console.error('Post ID is not available or form is invalid.');
     }
   }
 }

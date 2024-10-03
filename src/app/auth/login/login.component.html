@@ -12,27 +12,31 @@
     <div class="w-full md:w-1/2 p-8">
       <h2 class="text-3xl font-bold text-center text-[#20948B]">Login</h2>
       
-      <form (submit)="onLogin()" class="mt-8 space-y-6">
+      <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="mt-8 space-y-6">
         <div class="relative">
           <input
             type="email"
-            [(ngModel)]="email"
-            name="email"
+            formControlName="email"
             placeholder="Email"
             required
             class="block w-full px-4 py-3 bg-gray-50 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6AB187] focus:border-[#6AB187]"
           />
+          <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="text-red-600 text-sm">
+            Invalid email address.
+          </div>
         </div>
 
         <div class="relative">
           <input
             type="password"
-            [(ngModel)]="password"
-            name="password"
+            formControlName="password"
             placeholder="Password"
             required
             class="block w-full px-4 py-3 bg-gray-50 text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#6AB187] focus:border-[#6AB187]"
           />
+          <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="text-red-600 text-sm">
+            Password must be at least 6 characters.
+          </div>
         </div>
 
         <button

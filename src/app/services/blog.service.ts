@@ -28,6 +28,7 @@ export class BlogService {
 
   // Create a new blog post
   createPost(post: BlogPost): Promise<string> {
+
     const newPost = { ...post, createdAt: new Date() };
     return this.blogsRef
       .push(newPost)
