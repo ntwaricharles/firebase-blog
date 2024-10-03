@@ -17,7 +17,9 @@ export interface BlogPost {
   providedIn: 'root',
 })
 export class BlogService {
-  private dbPath = '/blogs'; // Path in Realtime Database
+  private dbPath = '/blogs';
+  private commentsPath = '/comments';
+
   blogsRef: AngularFireList<BlogPost>;
 
   constructor(private db: AngularFireDatabase) {
@@ -31,7 +33,7 @@ export class BlogService {
       .push(newPost)
       .then((result) => {
         if (result.key) {
-          return result.key; 
+          return result.key;
         } else {
           throw new Error('Failed to create post: key is null');
         }
@@ -53,7 +55,7 @@ export class BlogService {
               title: c.payload.val()?.title || 'Untitled Post',
               content: c.payload.val()?.content || 'No content available',
               author: c.payload.val()?.author || 'Unknown Author',
-              createdAt: c.payload.val()?.createdAt || new Date(), 
+              createdAt: c.payload.val()?.createdAt || new Date(),
             }))
             .filter((post) => post.id !== null) // Filter out posts with null id
       )
@@ -63,6 +65,22 @@ export class BlogService {
   // Retrieve a single blog post by ID
   getPostById(id: string): Observable<BlogPost | null> {
     return this.db.object<BlogPost>(`${this.dbPath}/${id}`).valueChanges();
+  }
+
+  // Get comments by post ID
+  getCommentsByPostId(postId: string): Observable<any[]> {
+    return this.db.list(`${this.commentsPath}/${postId}`).valueChanges();
+  }
+
+  // Add a new comment to the post
+  addCommentToPost(
+    postId: string,
+    comment: { name: string; email: string; body: string }
+  ): Promise<void> {
+    return this.db
+      .list(`${this.commentsPath}/${postId}`)
+      .push(comment)
+      .then(() => {});
   }
 
   // Update a blog post by ID
