@@ -4,7 +4,7 @@ import {
   AngularFirestoreCollection,
 } from '@angular/fire/compat/firestore';
 import { Observable } from 'rxjs';
-import firebase from 'firebase/compat/app';
+
 
 // BlogPost interface
 export interface BlogPost {
@@ -12,9 +12,9 @@ export interface BlogPost {
   title: string;
   content: string;
   author: string;
-  createdAt: firebase.firestore.Timestamp;
-  likes?: string[]; // likes can be an array of strings representing user emails
-  comments?: string[]; // Array to store comment references or actual comments
+  createdAt: Date;
+  likes?: string[]; 
+  comments?: string[]; 
 }
 
 // Comment interface
@@ -30,7 +30,7 @@ export interface Comment {
 })
 export class BlogService {
   private blogCollection: AngularFirestoreCollection<BlogPost>;
-  private commentsPath = 'comments'; // This should refer to the collection name
+  private commentsPath = 'comments';
 
   constructor(private firestore: AngularFirestore) {
     this.blogCollection = this.firestore.collection<BlogPost>('blog');
@@ -39,7 +39,11 @@ export class BlogService {
   // Create a new blog post
   createPost(post: BlogPost): Promise<void> {
     const id = this.firestore.createId();
-    const newPost = { ...post, id, createdAt: firebase.firestore.Timestamp.fromDate(new Date()) }; // Use Firestore Timestamp
+    const newPost = {
+      ...post,
+      id,
+      createdAt: new Date(), // Change from Timestamp to Date
+    };
     return this.blogCollection.doc(id).set(newPost);
   }
 
@@ -55,17 +59,15 @@ export class BlogService {
 
   // Get comments by post ID
   getCommentsByPostId(postId: string): Observable<Comment[]> {
-    // Adjusting the path to be 'blog/{postId}/comments' to correctly reference the comments subcollection
     return this.firestore
-      .collection<Comment>(`blog/${postId}/comments`) // Ensure the path is correct
+      .collection<Comment>(`blog/${postId}/comments`)
       .valueChanges();
   }
 
   // Add a new comment to a blog post
   addCommentToPost(postId: string, comment: Comment): Promise<void> {
-    // Ensure you're adding to the correct comments subcollection
     return this.firestore
-      .collection(`blog/${postId}/comments`) // Correct path to comments
+      .collection(`blog/${postId}/comments`)
       .add(comment)
       .then(() => {});
   }
@@ -78,7 +80,7 @@ export class BlogService {
     // If the user hasn't liked the post yet, add their email
     if (!likes.includes(userEmail)) {
       return this.blogCollection.doc(postId).update({
-        likes: [...likes, userEmail], // Update likes array directly
+        likes: [...likes, userEmail],
       });
     }
   }
@@ -92,7 +94,7 @@ export class BlogService {
     if (likes.includes(userEmail)) {
       const updatedLikes = likes.filter((email) => email !== userEmail);
       return this.blogCollection.doc(postId).update({
-        likes: updatedLikes, // Update likes array directly
+        likes: updatedLikes,
       });
     }
   }
