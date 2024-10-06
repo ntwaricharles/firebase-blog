@@ -3,10 +3,17 @@
     <a href="/blog" class="text-white text-xl font-semibold">Firebase Blog</a>
     <ul class="flex space-x-4">
       <li>
-        <a routerLink="/create-post" class="bg-green-600 py-1 px-2 rounded-md font-bold text-white">+ Post</a>
+        <a
+          routerLink="/create-post"
+          class="bg-green-600 py-1 px-2 rounded-md font-bold text-white"
+          >+ Post</a
+        >
       </li>
       <li>
-        <a routerLink="/login" class="text-white font-bold">LogOut</a>
+        <a routerLink="/profile" class="text-white font-bold">Profile</a>
+      </li>
+      <li>
+        <button (click)="logout()" class="text-white font-bold">LogOut</button>
       </li>
     </ul>
   </div>

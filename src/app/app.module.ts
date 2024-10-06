@@ -16,6 +16,7 @@ import { PostDetailComponent } from './blog/post-detail/post-detail.component';
 import { CommentsSectionComponent } from './blog/comments-section/comments-section.component';
 import { PostFormComponent } from './blog/post-form/post-form.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ProfileComponent } from './profile/profile.component';
 
 
 @NgModule({
@@ -27,6 +28,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     PostDetailComponent,
     CommentsSectionComponent,
     PostFormComponent,
+    ProfileComponent,
   ],
   imports: [
     BrowserModule,
