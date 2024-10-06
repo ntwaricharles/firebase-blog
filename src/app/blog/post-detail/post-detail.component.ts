@@ -1,26 +1,32 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { BlogService, BlogPost } from '../../services/blog.service';
+import { AuthService } from '../../services/auth.service';
+import { User as FirebaseUser } from 'firebase/auth';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-post-detail',
   templateUrl: './post-detail.component.html',
+  styleUrls: ['./post-detail.component.scss'],
 })
 export class PostDetailComponent implements OnInit {
-  post: BlogPost | null = null;
+  post: BlogPost | undefined;
+  user$: Observable<FirebaseUser | null>;
+  user: FirebaseUser | null = null;
   comments: any[] = [];
   commentForm: FormGroup;
 
   constructor(
-    private blogService: BlogService,
     private route: ActivatedRoute,
-    private fb: FormBuilder 
+    private blogService: BlogService,
+    private authService: AuthService,
+    private fb: FormBuilder
   ) {
+    this.user$ = this.authService.user$;
     this.commentForm = this.fb.group({
-      name: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      body: ['', Validators.required],
+      body: [''],
     });
   }
 
@@ -28,62 +34,57 @@ export class PostDetailComponent implements OnInit {
     const postId = this.route.snapshot.paramMap.get('id');
     if (postId) {
       this.loadPostDetails(postId);
-    } else {
-      console.error('Post ID is missing from the route.');
     }
-  }
 
-  loadPostDetails(postId: string) {
-    this.blogService.getPostById(postId).subscribe((post) => {
-      if (post) {
-        this.post = post;
-        if (post.id) {
-          this.loadComments(post.id);
-        } else {
-          console.error('Post does not have a valid ID.');
-        }
-      } else {
-        console.error('Post not found.');
-        this.post = null;
-      }
+    this.user$.subscribe((user) => {
+      this.user = user;
     });
   }
 
-  loadComments(postId: string | null | undefined) {
-    if (!postId) {
-      console.error('Invalid post ID provided for loading comments.');
-      return;
-    }
-
-    this.blogService.getCommentsByPostId(postId).subscribe(
-      (comments) => {
-        this.comments = comments || []; 
-        if (!comments) {
-          console.log('No comments found for the post.');
-        }
-      },
-      (error) => {
-        console.error('Error loading comments:', error);
-      }
-    );
+  loadPostDetails(id: string): void {
+    this.blogService.getPostById(id).subscribe((post) => {
+      this.post = post;
+      this.comments = post?.comments || [];
+    });
   }
 
-  addComment() {
-    const postId = this.post?.id;
+  // Check if the 'likes' field is an array
+  isArrayOfStrings(likes: any): likes is string[] {
+    return Array.isArray(likes);
+  }
 
-    if (postId && this.commentForm.valid) {
-      // Proceed to add the comment
-      this.blogService
-        .addCommentToPost(postId, this.commentForm.value)
-        .then(() => {
-          this.commentForm.reset(); 
-          this.loadComments(postId);
-        })
-        .catch((error) => {
-          console.error('Failed to add comment:', error);
-        });
-    } else {
-      console.error('Post ID is not available or form is invalid.');
+  // Add comment handling logic
+  addComment(): void {
+    if (this.commentForm.valid && this.post && this.user) {
+      const newComment = {
+        email: this.user.email, // Automatically use logged-in user's email
+        ...this.commentForm.value,
+        date: new Date().toISOString(),
+        blogId: this.post.id!,
+      };
+
+      this.blogService.addCommentToPost(this.post.id!, newComment).then(() => {
+        this.comments.push(newComment);
+        this.commentForm.reset();
+      });
+    }
+  }
+
+  // Like post logic
+  likePost(): void {
+    if (this.user && this.post) {
+      this.blogService.likePost(this.post.id!, this.user.email!).then(() => {
+        console.log('Post liked!');
+      });
+    }
+  }
+
+  // Unlike post logic
+  unlikePost(): void {
+    if (this.user && this.post) {
+      this.blogService.unlikePost(this.post.id!, this.user.email!).then(() => {
+        console.log('Post unliked!');
+      });
     }
   }
 }
