@@ -8,6 +8,7 @@
       <!-- Post Author and Date -->
       <p class="text-gray-500 mb-2">By {{ post?.author }} on {{ post?.createdAt | date }}</p>
 
+
       <!-- Post Content -->
       <p class="text-gray-800 mb-4" [innerHTML]="post?.content"></p>
 
@@ -19,9 +20,6 @@
             <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 11l6.364 6.364m-6.364-6.364L3 21h18m-8.485-8.485l3.536 3.536" />
           </svg>
         </a>
-
-        <!-- Like/Unlike Button -->
-        <!-- (This section remains unchanged) -->
       </div>
     </div>
 

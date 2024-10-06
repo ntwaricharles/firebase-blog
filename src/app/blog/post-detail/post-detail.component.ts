@@ -5,6 +5,7 @@ import { BlogService, BlogPost } from '../../services/blog.service';
 import { AuthService } from '../../services/auth.service';
 import { User as FirebaseUser } from 'firebase/auth';
 import { Observable } from 'rxjs';
+import { Timestamp } from 'firebase/firestore'; // Ensure you import Timestamp
 
 @Component({
   selector: 'app-post-detail',
@@ -26,6 +27,7 @@ export class PostDetailComponent implements OnInit {
   ) {
     this.user$ = this.authService.user$;
     this.commentForm = this.fb.group({
+      email: [''], // This will be set later to logged-in user's email
       body: [''],
     });
   }
@@ -38,13 +40,24 @@ export class PostDetailComponent implements OnInit {
 
     this.user$.subscribe((user) => {
       this.user = user;
+      // Set the email field to the logged-in user's email
+      this.commentForm.patchValue({ email: user?.email });
     });
   }
 
   loadPostDetails(id: string): void {
     this.blogService.getPostById(id).subscribe((post) => {
-      this.post = post;
-      this.comments = post?.comments || [];
+      if (post) {
+        this.post = {
+          ...post,
+          // Convert createdAt from Timestamp to Date
+          createdAt:
+            post.createdAt instanceof Timestamp
+              ? post.createdAt.toDate()
+              : post.createdAt,
+        };
+        this.comments = post?.comments || [];
+      }
     });
   }
 
@@ -55,9 +68,8 @@ export class PostDetailComponent implements OnInit {
 
   // Add comment handling logic
   addComment(): void {
-    if (this.commentForm.valid && this.post && this.user) {
+    if (this.commentForm.valid && this.post) {
       const newComment = {
-        email: this.user.email, // Automatically use logged-in user's email
         ...this.commentForm.value,
         date: new Date().toISOString(),
         blogId: this.post.id!,
