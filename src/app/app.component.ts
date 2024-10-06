@@ -7,10 +7,5 @@ import { AuthService } from './services/auth.service';
   styleUrl: './app.component.css',
 })
 export class AppComponent {
-  constructor(private authService: AuthService) {}
 
-  // Logout function
-  logout() {
-    this.authService.logout();
-  }
 }
