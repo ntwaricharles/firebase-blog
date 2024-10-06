@@ -1,0 +1,39 @@
+<div class="flex items-center justify-center min-h-screen">
+  <div *ngIf="user$ | async as user; else loading" class="bg-green-200 p-8 rounded-lg shadow-md flex flex-col items-center space-y-6 -mt-16">
+    <div class="flex-shrink-0">
+      <img
+        *ngIf="user?.photoURL; else defaultIcon"
+        [src]="user.photoURL"
+        alt="Profile Picture"
+        class="w-24 h-24 rounded-full object-cover border-2 border-[#20948B]"
+      />
+      <ng-template #defaultIcon>
+        <div class="w-24 h-24 flex items-center justify-center bg-gray-200 rounded-full border-2 border-[#20948B]">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-12 w-12 text-[#20948B]"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v7l9-5-9-5z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l-9-5 9-5v7z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l-9 5 9 5v-7z" />
+          </svg>
+        </div>
+      </ng-template>
+    </div>
+    <div class="text-center">
+      <h2 class="text-2xl font-bold text-[#20948B]">{{ user?.email }}</h2>
+      <p class="text-gray-600"><strong>UID:</strong> {{ user?.uid }}</p>
+      <p class="text-gray-600"><strong>Provider:</strong> {{ user?.providerData[0]?.providerId }}</p>
+    </div>
+  </div>
+
+  <ng-template #loading>
+    <p class="text-gray-600">Loading user information...</p>
+  </ng-template>
+
+  <p *ngIf="errorMessage" class="text-red-600 mt-4">{{ errorMessage }}</p>
+</div>
