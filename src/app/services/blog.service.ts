@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
+import { AngularFireAuth } from '@angular/fire/compat/auth';
 import {
   AngularFirestore,
   AngularFirestoreCollection,
 } from '@angular/fire/compat/firestore';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 
 
 // BlogPost interface
@@ -32,7 +33,10 @@ export class BlogService {
   private blogCollection: AngularFirestoreCollection<BlogPost>;
   private commentsPath = 'comments';
 
-  constructor(private firestore: AngularFirestore) {
+  constructor(
+    private firestore: AngularFirestore,
+    private afAuth: AngularFireAuth
+  ) {
     this.blogCollection = this.firestore.collection<BlogPost>('blog');
   }
 
@@ -124,5 +128,11 @@ export class BlogService {
         console.error('Error deleting post:', error);
         throw error;
       });
+  }
+
+  getCurrentUserEmail(): Observable<string | null> {
+    return this.afAuth.authState.pipe(
+      map((user) => (user ? user.email : null))
+    );
   }
 }
