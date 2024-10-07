@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
   styleUrls: ['./profile.component.css'],
 })
 export class ProfileComponent implements OnInit {
-  user$: Observable<any> | null = null; // Initialize with null
+  user$: Observable<any> | null = null; 
   errorMessage: string = '';
 
   constructor(private authService: AuthService) {}

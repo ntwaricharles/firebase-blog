@@ -40,7 +40,6 @@ export class PostFormComponent implements OnInit {
       }
     });
 
-    // Get the logged-in user's email and set it as the author, otherwise 'Anonymous'
     this.authService.getUser().subscribe((user) => {
       this.authorEmail = user?.email || 'Anonymous';
     });

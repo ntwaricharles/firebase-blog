@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms'; // Added Validators
-import { BlogService, BlogPost, Comment } from '../../services/blog.service'; // Ensure 'Comment' is imported
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { BlogService, BlogPost, Comment } from '../../services/blog.service';
 import { AuthService } from '../../services/auth.service';
 import { User as FirebaseUser } from 'firebase/auth';
 import { Observable } from 'rxjs';
-import { Timestamp } from 'firebase/firestore'; // Ensure you import Timestamp
-import { MetaService } from '../../services/meta.service'; // Import MetaService
+import { Timestamp } from 'firebase/firestore';
+import { MetaService } from '../../services/meta.service';
 
 @Component({
   selector: 'app-post-detail',
@@ -17,7 +17,7 @@ export class PostDetailComponent implements OnInit {
   post: BlogPost | undefined;
   user$: Observable<FirebaseUser | null>;
   user: FirebaseUser | null = null;
-  comments: Comment[] = []; // Make sure to have a 'Comment' type
+  comments: Comment[] = []; 
   commentForm: FormGroup;
 
   constructor(
@@ -25,12 +25,12 @@ export class PostDetailComponent implements OnInit {
     private blogService: BlogService,
     private authService: AuthService,
     private fb: FormBuilder,
-    private metaService: MetaService // Inject MetaService
+    private metaService: MetaService
   ) {
     this.user$ = this.authService.user$;
     this.commentForm = this.fb.group({
-      email: [''], // This will be set later to logged-in user's email
-      body: ['', Validators.required], // Added validation for comment body
+      email: [''],
+      body: ['', Validators.required],
     });
   }
 
@@ -38,14 +38,13 @@ export class PostDetailComponent implements OnInit {
     const postId = this.route.snapshot.paramMap.get('id');
     if (postId) {
       this.loadPostDetails(postId);
-      this.loadComments(postId); // Fetch comments based on post ID
+      this.loadComments(postId); 
     }
 
     // Subscribe to the logged-in user
     this.user$.subscribe((user) => {
       this.user = user;
       if (user) {
-        // Set the email field to the logged-in user's email
         this.commentForm.patchValue({ email: user.email });
       }
     });
@@ -64,7 +63,7 @@ export class PostDetailComponent implements OnInit {
         };
         // Set dynamic meta tags based on the post data
         this.metaService.setTitle(post.title);
-        this.metaService.setDescription(post.content.slice(0, 150)); // Set first 150 characters as the description
+        this.metaService.setDescription(post.content.slice(0, 150));
         this.metaService.updateMetaTags([
           { name: 'author', content: post.author || 'Anonymous' },
         ]);
@@ -89,9 +88,9 @@ export class PostDetailComponent implements OnInit {
       };
 
       this.blogService.addCommentToPost(this.post.id!, newComment).then(() => {
-        this.comments.push(newComment); // Add new comment to the comments array
-        this.commentForm.reset(); // Reset the form after submission
-        this.commentForm.patchValue({ email: this.user?.email || '' }); // Reset email to the current user
+        this.comments.push(newComment);
+        this.commentForm.reset();
+        this.commentForm.patchValue({ email: this.user?.email || '' });
       });
     }
   }
