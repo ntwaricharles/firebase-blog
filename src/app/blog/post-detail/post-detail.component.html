@@ -3,17 +3,24 @@
     <!-- Blog Post Section -->
     <div class="col-span-2 bg-white p-6 rounded-lg shadow-lg mb-8">
       <h1 class="text-3xl font-bold text-[#6AB187] mb-4">{{ post?.title }}</h1>
-      <p class="text-gray-500 mb-2">By {{ post?.author }} on {{ post?.createdAt | date }}</p>
+      <p class="text-gray-500 mb-2">
+        By {{ post?.author }} on {{ post?.createdAt | date }}
+      </p>
       <p class="text-gray-800 mb-4" [innerHTML]="post?.content"></p>
     </div>
 
     <!-- Comments Section -->
-    <div class="col-span-1 bg-gray-100 p-6 rounded-lg shadow-lg mb-8 md:h-96 md:overflow-y-scroll">
+    <div
+      class="col-span-1 bg-gray-100 p-6 rounded-lg shadow-lg mb-8 md:h-96 md:overflow-y-scroll"
+    >
       <h2 class="text-2xl font-semibold text-[#6AB187] mb-4">Comments</h2>
 
       <!-- Display Comments -->
       <div *ngIf="comments.length; else noComments">
-        <div *ngFor="let comment of comments" class="bg-white p-4 rounded-md mb-4 shadow-md">
+        <div
+          *ngFor="let comment of comments"
+          class="bg-white p-4 rounded-md mb-4 shadow-md"
+        >
           <p class="text-gray-700">{{ comment.body }}</p>
           <span class="text-gray-500 text-sm">By: {{ comment.email }}</span>
         </div>
@@ -27,8 +34,26 @@
       <!-- Comment Form -->
       <form [formGroup]="commentForm" (ngSubmit)="addComment()">
         <h3 class="text-lg text-[#20948B] font-semibold mt-4">Add a Comment</h3>
-        <textarea formControlName="body" placeholder="Your Comment" class="border p-2 w-full mb-2"></textarea>
-        <button type="submit" class="bg-[#6AB187] text-white p-2 rounded">Submit</button>
+        <textarea
+          formControlName="body"
+          placeholder="Your Comment"
+          class="border p-2 w-full mb-2"
+        ></textarea>
+        <div
+          *ngIf="
+            commentForm.get('body')?.invalid && commentForm.get('body')?.touched
+          "
+          class="text-red-500 text-sm"
+        >
+          Comment is required.
+        </div>
+        <button
+          type="submit"
+          class="bg-[#6AB187] text-white p-2 rounded"
+          [disabled]="commentForm.invalid"
+        >
+          Submit
+        </button>
       </form>
     </div>
   </div>
