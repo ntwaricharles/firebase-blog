@@ -1,27 +1,24 @@
 # FirebaseBlog
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.0.6.
+This project is an Angular-based blog platform that integrates Firebase services like Firestore, Authentication, and Hosting. It features user authentication, CRUD operations for blog posts, real-time comments, SEO, and Progressive Web App (PWA) capabilities.
 
-## Development server
+## Deployment Link:
+https://fir-blog-crud-efb04.web.app/
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Firebase Authentication:
 
-## Code scaffolding
+Email/password registration and login
+Google sign-in option
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Firestore Database:
+Create, Read, Update, Delete (CRUD) operations for blog posts and comments
+Real-time comment updates
 
-## Build
+## SEO Optimization:
+Dynamic meta tags for SEO optimization
+Structured data for blog posts
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Progressive Web App (PWA):
 
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+Service worker for offline capabilities
+Manifest file for PWA setup
