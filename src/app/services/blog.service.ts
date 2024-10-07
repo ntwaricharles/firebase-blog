@@ -6,7 +6,6 @@ import {
 } from '@angular/fire/compat/firestore';
 import { map, Observable } from 'rxjs';
 
-
 // BlogPost interface
 export interface BlogPost {
   id?: string | null;
@@ -14,14 +13,14 @@ export interface BlogPost {
   content: string;
   author: string;
   createdAt: Date;
-  likes?: string[]; 
-  comments?: string[]; 
+  likes?: string[];
+  comments?: string[];
 }
 
 // Comment interface
 export interface Comment {
-  content: string | null;
-  authorEmail: string;
+  body: string | null;
+  email: string;
   date: string;
   blogId: string;
 }
@@ -31,6 +30,7 @@ export interface Comment {
 })
 export class BlogService {
   private blogCollection: AngularFirestoreCollection<BlogPost>;
+  private commentsCollection: AngularFirestoreCollection<Comment>;
   private commentsPath = 'comments';
 
   constructor(
@@ -38,6 +38,9 @@ export class BlogService {
     private afAuth: AngularFireAuth
   ) {
     this.blogCollection = this.firestore.collection<BlogPost>('blog');
+    this.commentsCollection = this.firestore.collection<Comment>(
+      this.commentsPath
+    );
   }
 
   // Create a new blog post
@@ -61,19 +64,23 @@ export class BlogService {
     return this.blogCollection.doc<BlogPost>(id).valueChanges();
   }
 
-  // Get comments by post ID
+  // Get comments by post ID (from the top-level comments collection)
   getCommentsByPostId(postId: string): Observable<Comment[]> {
     return this.firestore
-      .collection<Comment>(`blog/${postId}/comments`)
+      .collection<Comment>(this.commentsPath, (ref) =>
+        ref.where('blogId', '==', postId)
+      )
       .valueChanges();
   }
 
-  // Add a new comment to a blog post
+  // Add a new comment to a blog post (store in the top-level comments collection)
   addCommentToPost(postId: string, comment: Comment): Promise<void> {
-    return this.firestore
-      .collection(`blog/${postId}/comments`)
-      .add(comment)
-      .then(() => {});
+    const commentWithBlogId = {
+      ...comment,
+      blogId: postId,
+      date: new Date().toISOString(),
+    };
+    return this.commentsCollection.add(commentWithBlogId).then(() => {});
   }
 
   // Like a blog post
@@ -130,6 +137,7 @@ export class BlogService {
       });
   }
 
+  // Get current user email
   getCurrentUserEmail(): Observable<string | null> {
     return this.afAuth.authState.pipe(
       map((user) => (user ? user.email : null))
